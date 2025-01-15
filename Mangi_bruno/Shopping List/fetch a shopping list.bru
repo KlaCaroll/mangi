@@ -1,0 +1,52 @@
+meta {
+  name: fetch a shopping list
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{url}}/shopping-list
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: {{token}}
+}
+
+body:json {
+  {
+    "from": "2022-01-01T19:00:00Z",
+      "to": "2024-11-03T09:00:00Z",
+  }
+}
+
+tests {
+  test("Shopping list should be abble to show", function() {
+    const data = res.getBody();
+    if (data.code == "database_error:") {
+      expect(data.code).to.be.a('string');
+      expect(data.code).to.equal("database_error:");
+      expect(data.err).to.be.a('string');
+      expect(data.err).to.equal("internal problem with database");
+    } else if (data.code == "unauthorized_error:") {
+      expect(data.code).to.be.a('string');
+      expect(data.code).to.equal("unauthorized_error:");
+      expect(data.err).to.equal("token expired");
+    } else {
+      expect(data.name).to.be.a('string');
+      expect(data.user_id).to.be.a('Number');
+      expect(data.from).to.be.a('string');
+      expect(data.to).to.be.a('string');
+      expect(data.items).to.be.an('array');
+      const items = data.items;
+      for (let i = 0; i < items.length;  i += 1) {
+        const item = items[i];
+        expect(item.name).to.be.a('string');
+        expect(item.quantity).to.be.a('Number');
+        expect(item.unit).to.be.a('string');
+      }
+    }
+    expect(res.getStatus()).to.equal(200);
+  });
+}

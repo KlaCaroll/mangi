@@ -1,0 +1,13 @@
+.DS_Store
+
+bin/
+
+db/ligne-food.txt
+
+api/review.md
+
+app/node_modules
+app/.expo
+
+
+pfsenseFw-UDP4-1194-klacar_c-config

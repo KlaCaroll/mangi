@@ -1,0 +1,32 @@
+pipeline{
+    agent{
+        label "vm-test"
+    }
+    stages{
+        stage("API Deploy"){
+            steps{
+                script {
+                    sh 'docker stop mangi_api'
+                    sh 'docker system prune -af'
+                    sh 'docker compose -f ./api-deploy.yml up -d'
+                }
+            }
+            post{
+                success{
+                    echo "========API Deploy executed successfully========"
+                }
+                failure{
+                    echo "========API Deploy execution failed========"
+                }
+            }
+        }
+    }
+    post{
+        success{
+            echo "========pipeline executed successfully ========"
+        }
+        failure{
+            echo "========pipeline execution failed========"
+        }
+    }
+}

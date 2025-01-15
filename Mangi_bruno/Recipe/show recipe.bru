@@ -1,0 +1,58 @@
+meta {
+  name: show recipe
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{url}}/recipe?id=3&guests=0
+  body: json
+  auth: none
+}
+
+params:query {
+  id: 3
+  guests: 0
+}
+
+headers {
+  Authorization: {{token}}
+}
+
+tests {
+  test("should be able to show a recipe", function() {
+    const data = res.getBody();
+    if (data.code == "database_error:") {
+      expect(data.code).to.equal("database_error:");
+      expect(data.err).to.equal("internal problem with database");
+    } else if (data.code == "Unauthoried_request_error") {
+      expect(data.code).to.equal("Unauthoried_request_error:");
+      expect(data.err).to.equal("cant_update_this_recipe");
+    } else if (data.err == "token expired") {
+      expect(data.code).to.equal("unauthorized_error:");
+      expect(data.err).to.equal("token expired");
+    } else {
+      expect(data).to.be.a('object');
+      for (let i = 0; i < data.length; i += 1) {
+        expect(data[i]).to.be.a('object');
+        expect(data[i].id).to.be.a('Number');
+        expect(data[i].name).to.be.a('string');
+        expect(data[i].preparation_time).to.be.a('Number');
+        expect(data[i].total_time).to.be.a('Number');
+        expect(data[i].description).to.be.a('string');
+        expect(data[i].is_public).to.be.a('Number');
+        expect(data[i].by).to.be.a('Number');
+        expect(data[i].owner_id).to.be.a('Number');
+        expect(data[i].ingredients).to.be.an('array');
+        for (let j = 0; j < 5; i+= 1) {
+          expect(data[i].ingredients.id).to.be.a('Number');
+          expect(data[i].ingredients.name).to.be.a('string');
+          expect(data[i].ingredients.quantity).to.be.a('Number');
+          expect(data[i].ingredients.unit).to.be.a('string');
+        }
+      }
+    }
+    expect(res.getStatus()).to.equal(200);
+  });
+  
+}

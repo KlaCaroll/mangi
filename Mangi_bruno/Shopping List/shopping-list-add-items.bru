@@ -1,0 +1,108 @@
+meta {
+  name: shopping-list-add-items
+  type: http
+  seq: 2
+}
+
+put {
+  url: {{url}}/shopping-list/add-items
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: {{token}}
+}
+
+body:json {
+  {
+    "from": "2024-10-15T19:00:00.00Z",
+    "to": "2024-12-15T09:00:00.00Z", 
+    "items": [
+      {
+        "name": "cacahètes",
+        "quantity": 100,
+        "unit": "g"
+      },
+      {
+        "name": "yaourt x",
+        "quantity": 4,
+        "unit": "u"
+      },
+      {
+        "name": "croquettes chat",
+        "quantity": 1,
+        "unit": "u"
+      },
+      {
+        "name": "appel maman",
+        "quantity": 1,
+        "unit": "u"
+      }
+    ]
+  }
+}
+
+tests {
+  test("should be able to add item to shoppingList", function() {
+    const data = res.getBody();
+    if (data.code == "unauthorized_error:") {
+      expect(data.code).to.be.a('string');
+      expect(data.code).to.equal("unauthorized_error:");
+      expect(data.err).to.be.a('string');
+      expect(data.err).to.equal("token expired");
+    } else if (data.code == "database_error:") {
+      expect(data.code).to.be.a('string');
+      expect(data.code).to.equal("database_error:");
+      expect(data.err).to.be.a('string');
+      expect(data.err).to.equal("internal problem with database");
+    } else {
+      expect(data).to.be.a('object');
+      expect(data.name).to.be.a('string');
+      expect(data.user_id).to.be.a('Number');
+      expect(data.from).to.be.a('string');
+      expect(data.to).to.be.a('string');
+      expect(data.items).to.be.an('null'||'array');
+      const items = data.items
+      if (items.length > 0) {
+         for (let i = 0; i < items.length; i += 1) {
+          const item = items[i]
+          expect(item.name).to.be.a('string');
+          expect(item.quantity).to.be.a('Number');
+          expect(item.unit).to.be.a('string');
+        }
+      }
+    }
+    expect(res.getStatus()).to.equal(200);
+  });
+  
+  
+  test("last items equal to insert", function() {
+    const input = req.getBody();
+    const data = res.getBody();
+    if (data.code == "unauthorized_error:") {
+      expect(data.code).to.be.a('string');
+      expect(data.code).to.equal("unauthorized_error:");
+      expect(data.err).to.be.a('string');
+      expect(data.err).to.equal("token expired");
+    } else if (data.code == "database_error:") {
+      expect(data.code).to.be.a('string');
+      expect(data.code).to.equal("database_error:");
+      expect(data.err).to.be.a('string');
+      expect(data.err).to.equal("internal problem with database");
+    } else {
+      const start = data.length - input.length
+      const items = data.items
+      if (items.length > 0) {
+        for (i = start; i < items.length; i += 1) {
+          const item = items[i]
+          let j = 0
+          expect(item.name).to.equal(input.items[j].name);
+          expect(item.quantity).to.equal(input.items[j].quantity);
+          expect(item.unit).to.equal(input.items[j].unit);
+          j += 1
+        }
+      }
+    }
+  });
+}

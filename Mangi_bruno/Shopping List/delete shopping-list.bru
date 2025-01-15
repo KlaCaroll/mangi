@@ -1,0 +1,53 @@
+meta {
+  name: delete shopping-list
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{url}}/shopping-list/delete
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: {{token}}
+}
+
+body:json {
+  {
+    "name": "to delete",
+    "user_id": 1,
+    "from": "2023-01-01T19:00:00Z",
+    "to": "2024-11-03T09:00:00Z"
+  }
+}
+
+tests {
+  test("should be able to delete shoppingList", function() {
+    const data = res.getBody();
+    if (data.code == "input_error") {
+      expect(data.code).to.be.a('string');
+      expect(data.code).to.equal("input_error");
+      expect(data.err).to.be.a('string');
+      expect(data.err).to.equal("no_shopping_list");
+    } else if (data.err == "token expired") {
+      expect(data.code).to.be.a('string');
+      expect(data.code).to.equal("unauthorized_error:");
+      expect(data.err).to.equal("token expired");
+    } else if (data.err == "cant_delete_not_your_shopping_list") {
+      expect(data.code).to.be.a('string');
+      expect(data.code).to.equal("unauthorized_error:");
+      expect(data.err).to.be.a('string');
+      expect(data.err).to.equal("cant_delete_not_your_shopping_list");
+    } else if (data.code == "unauthorized_error:") {
+      expect(data.code).to.be.a('string');
+      expect(data.code).to.equal("unauthorized_error:");
+      expect(data.err).to.be.a('string');
+      expect(data.err).to.equal("cant_delete_not_your_shopping_list");
+    } else {
+      expect(data.ack).to.equal(true);
+    }
+    expect(res.getStatus()).to.equal(200);
+  });
+}

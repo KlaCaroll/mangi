@@ -1,0 +1,61 @@
+meta {
+  name: meals
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{url}}/meals?from=2024-09-01T19:00:00.00Z&to=2024-12-01T09:00:00.00Z
+  body: json
+  auth: none
+}
+
+query {
+  from: 2024-09-01T19:00:00.00Z
+  to: 2024-12-01T09:00:00.00Z
+}
+
+headers {
+  Authorization: {{token}}
+}
+
+body:json {
+  {
+    "from": "2024-09-01T19:00:00.00Z",
+    "to": "2024-11-02T09:00:00.00Z"
+  }
+}
+
+tests {
+  test("should be able to show meals", function() {
+    const data = res.getBody();
+    if (data.code == "database_error:") {
+      expect(data.code).to.equal("database_error:");
+      expect(data.err).to.equal("internal problem with database");
+    } else if (data.err == "token expired") {
+      expect(data.code).to.equal("unauthorized_error:");
+      expect(data.err).to.equal("token expired");
+    } else {
+      if (data != null) {
+        expect(data).to.be.a('object');
+        expect(data.meals).to.be.an('array');
+        for (let i = 0; i < data.meals.length; i += 1) {
+          const meal = data.meals[i]
+          expect(meal.id).to.be.a('Number');
+          expect(meal.planned_at).to.be.a('string');
+          expect(meal.guests).to.be.a('Number');
+          expect(meal.recipes).to.be.an('array');
+          const recipe = meal.recipes[i];
+          for (let j = 0; i < meal.recipes.lenght; i += 1) {
+            expect(recipe).to.be.a('object');
+            expect(recipe.id).to.be.a('Number');
+            expect(recipe.name).to.be.a('string');
+            expect(recipe.description).to.be.a('Number');
+            expect(recpi.is_public).to.be.a('Number');
+          }
+        }
+      }
+    }
+    expect(res.getStatus()).to.equal(200);
+  });
+}

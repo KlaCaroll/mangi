@@ -1,0 +1,73 @@
+meta {
+  name: create recipe
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{url}}/recipe
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: {{token}}
+}
+
+body:json {
+  {
+    "name": "recette pour testing",
+    "preparation_time": 5,
+    "total_time": 5,
+    "description": "connexion db please ?",
+    "is_public": 0,
+    "ustensils": [
+      { "ustensil_id" : 4}
+    ],
+    "ingredients": [
+      {
+        "id": 48,
+        "quantity": 100,
+        "unit": "g"
+      },
+      {
+        "id": 21,
+        "quantity": 20,
+        "unit": "g"
+      },
+      {
+        "id": 5,
+        "quantity": 2,
+        "unit": "cs"
+      }
+    ],
+    "categories": [
+      {"category_id": 4},
+      {"category_id": 6},
+      {"category_id": 9},
+      {"category_id": 15}
+    ]
+  }
+}
+
+tests {
+  test("should be able to create a recipe", function() {
+    const data = res.getBody();
+    if (data.code == "database_error:") {
+      expect(data.code).to.be.a('string');
+      expect(data.code).to.equal("database_error:");
+      expect(data.err).to.equal("internal problem with database");
+    } else if (data.code == "input_error:") {
+      expect(data.code).to.be.a('string');
+      expect(data.code).to.equal("input_error:");
+      expect(data.err).to.equal("this list's name already exists");
+    } else if (data.err == "token expired") {
+      expect(data.code).to.be.a('string');
+      expect(data.code).to.equal("unauthorized_error:");
+      expect(data.err).to.equal("token expired");
+    } else {
+      expect(data.id).to.be.a('Number');
+    }
+    expect(res.getStatus()).to.equal(200);
+  });
+}

@@ -1,0 +1,33 @@
+meta {
+  name: login
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{url}}/login
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "password": "1234",
+    "email": "caroll@gmail.com"
+  }
+}
+
+tests {
+  test("should receive the token", function() {
+    const data = res.getBody();
+    if (data.err == "internal problem with database:") {
+      expect(data.code).to.equal("database_error:");
+      expect(data.err).to.equal("internal problem with database");
+    } else if (data.err == "no user found") {
+      expect(data.code).to.equal("database_error:");
+      expect(data.err).to.equal("no user found");
+    } else {
+      expect(data.token).to.be.a('string');
+    }
+  });
+}

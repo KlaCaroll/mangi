@@ -1,0 +1,40 @@
+meta {
+  name: delete home
+  type: http
+  seq: 2
+}
+
+put {
+  url: {{url}}/user/home/delete
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: {{token}}
+}
+
+body:json {
+  {
+    "home_name": "test home"
+  }
+}
+
+tests {
+  test("should be able to delete a home", function() {
+    const data = res.getBody();
+    if (data.code == "input_error:") {
+      expect(data.code).to.be.a('string');
+      expect(data.err).to.be.a('string');
+    } else if (data.code == "database_error:") {
+      expect(data.code).to.equal("database_error:");
+      expect(data.err).to.equal("internal problem with database");
+    } else if (data.err == "token expired") {
+      expect(data.code).to.equal("unauthorized_error:");
+      expect(data.err).to.equal("token expired");
+    } else {
+      expect(data.ack).to.equal(true);
+    }
+    expect(res.getStatus()).to.equal(200);
+  });
+}

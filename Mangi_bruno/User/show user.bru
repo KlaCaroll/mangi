@@ -1,0 +1,55 @@
+meta {
+  name: show user
+  type: http
+  seq: 7
+}
+
+get {
+  url: {{url}}/user?=1
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: {{token}}
+}
+
+tests {
+  test("should be able to show a user", function() {
+    const data = res.getBody();
+    if (data.err == "token expired") {
+      expect(data.code).to.be.a('string');
+      expect(data.code).to.equal("unauthorized_error:");
+      expect(data.err).to.be.a('string');
+      expect(data.err).to.equal("token expired");
+    } else if (data.err == "not your profil") {
+      expect(data.code).to.be.a('string');
+      expect(data.code).to.equal("unauthorized_error:");
+      expect(data.err).to.be.a('string');
+      expect(data.err).to.equal("not your profil");
+    } else {
+      expect(data.id).to.be.a('Number');
+      expect(data.name).to.be.a('string');
+      expect(data.email).to.be.a('string');
+      if (data.ustensils != null) {
+        expect(data.ustensils).to.be.a('array');
+        const ustensils = data.ustensils
+        for (let i=0; i<ustensils; i+=1) {
+          expect(ustensils[i].ustensils_id).to.be.a('Number');
+          expect(ustensils[i].ustensils_name).to.be.a('string');
+          expect(ustensils[i].exist).to.be.a('boolean');
+        }
+      }
+      if (data.preferences != null) {
+        expect(data.preferences).to.be.a('array');
+        const preferences = data.preferences
+        for (let i=0; i<preferences; i+=1) {
+          expect(preferences[i].preferences_id).to.be.a('Number');
+          expect(preferences[i].preferences_name).to.be.a('string');
+          expect(preferences[i].exist).to.be.a('boolean');
+        }
+      }
+    }
+    expect(res.getStatus()).to.equal(200);
+  });
+}

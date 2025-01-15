@@ -1,0 +1,174 @@
+meta {
+  name: update shopping list
+  type: http
+  seq: 5
+}
+
+put {
+  url: {{url}}/shopping-list
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: {{token}}
+}
+
+body:json {
+  {
+    "name": "to delete",
+    "user_id": 2,
+    "from": "2023-01-01T19:00:00Z",
+    "to": "2024-11-03T09:00:00Z",
+    "home_id": 1,
+    "items": [
+      {
+        "name": "crème de basilic",
+        "quantity": 12,
+        "unit": "cs"
+      },
+      {
+        "name": "épices italiennes",
+        "quantity": 16,
+        "unit": "cc"
+      },
+      {
+        "name": "pavé de boeuf",
+        "quantity": 8,
+        "unit": "u"
+      },
+      {
+        "name": "poivron",
+        "quantity": 4,
+        "unit": "u"
+      },
+      {
+        "name": "huile d olive",
+        "quantity": 16,
+        "unit": "cs"
+      },
+      {
+        "name": "pomme de terre",
+        "quantity": 2800,
+        "unit": "g"
+      },
+      {
+        "name": "vinaigre balsamique noir",
+        "quantity": 16,
+        "unit": "cc"
+      },
+      {
+        "name": "beurre",
+        "quantity": 4,
+        "unit": "cs"
+      },
+      {
+        "name": "crème fraiche",
+        "quantity": 1040,
+        "unit": "g"
+      },
+      {
+        "name": "fromage rapé à l italienne",
+        "quantity": 16,
+        "unit": "cc"
+      },
+      {
+        "name": "fromage frais aux herbes",
+        "quantity": 16,
+        "unit": "cc"
+      },
+      {
+        "name": "viande haché de boeuf",
+        "quantity": 400,
+        "unit": "g"
+      },
+      {
+        "name": "carotte",
+        "quantity": 4,
+        "unit": "u"
+      },
+      {
+        "name": "cube de bouillon de légumes",
+        "quantity": 8,
+        "unit": "u"
+      },
+      {
+        "name": "concentré de tomates",
+        "quantity": 40,
+        "unit": "g"
+      },
+      {
+        "name": "gousse d ail",
+        "quantity": 2.4,
+        "unit": "u"
+      },
+      {
+        "name": "oignon",
+        "quantity": 3.2,
+        "unit": "u"
+      }
+    ]
+  }
+}
+
+tests {
+  test("should be able to update shoppingList", function() {
+    const data = res.getBody();
+    if (data.code == "input_error:") {
+      expect(data.code).to.be.a('string');
+      expect(data.err).to.be.a('string');
+    } else if (data.code == "unauthorized_error:") {
+      expect(data.code).to.be.a('string');
+      expect(data.code).to.equal("unauthorized_error:");
+      expect(data.err).to.equal("token expired");
+    } else if (data.err == "internal problem with database") {
+      expect(data.code).to.be.a('string');
+      expect(data.code).to.equal("database_error:");
+      expect(data.err).to.equal("internal problem with database");
+    } else {
+      expect(data).to.be.a('object');
+      expect(data.user_id).to.be.a('Number');
+      expect(data.from).to.be.a('string');
+      expect(data.to).to.be.a('string');
+      expect(data.name).to.be.a('string');
+      expect(data.items).to.be.an('array');
+      const items = data.items
+      for (let i = 0; i < items.length; i += 1) {
+        const item = items[i]
+        expect(item.name).to.be.a('string');
+        expect(item.quantity).to.be.a('Number');
+        expect(item.unit).to.be.a('string');
+      }
+    }
+    expect(res.getStatus()).to.equal(200);
+  });
+  
+  test("update a shloppingList equal to input", function() {
+    const input = req.getBody();
+    const data = res.getBody();
+    if (data.code == "input_error:") {
+      expect(data.code).to.be.a('string');
+      expect(data.err).to.be.a('string');
+    } else if (data.code == "unauthorized_error:") {
+      expect(data.code).to.be.a('string');
+      expect(data.code).to.equal("unauthorized_error:");
+      expect(data.err).to.equal("token expired");
+    } else if (data.err == "internal problem with database") {
+      expect(data.code).to.be.a('string');
+      expect(data.code).to.equal("database_error:");
+      expect(data.err).to.equal("internal problem with database");
+    } else {
+      expect(data.user_id).to.equal(input.user_id);
+      expect(data.name).to.equal(input.name);
+      if (data.items > 0) {
+        const items = data.items
+        for (let i = 0; i < items.length; i += 1) {
+          expect(items[i].name).to.equal(input[i].name);
+          expect(items[i].quantity).to.equal(input[i].quantity);
+          expect(items[i].unit).to.equal(input[i].unit);
+        }
+      }
+    }
+    expect(res.getStatus()).to.equal(200);
+  });
+}

@@ -1,0 +1,60 @@
+meta {
+  name: recipes
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{url}}/recipes?page=1&preference=false&name=""
+  body: json
+  auth: none
+}
+
+query {
+  page: 1
+  preference: false
+  name: ""
+  ~category: []
+}
+
+headers {
+  Authorization: {{token}}
+}
+
+body:json {
+  {
+    "page": 1,
+    "name": "",
+    "category": [],
+    "preference": false
+  }
+}
+
+tests {
+  test("should be able to show recipes", function() {
+    const data = res.getBody();
+    const input = req.getBody();
+    if (input.name != "") {
+      expect(data.name).to.equal(input.name);
+    }
+    if (data.err == "token expired") {
+      expect(data.code).to.equal("unauthorized_error:");
+      expect(data.err).to.equal("token expired");
+    } else {
+      if (data.lenght > 0) {
+        for (let i = 0; i < data.length; i += 1) {
+          expect(data[i]).to.be.a('object');
+          expect(data[i].id).to.be.a('Number');
+          expect(data[i].name).to.be.a('string');
+          expect(data[i].preparation_time).to.be.a('Number');
+          expect(data[i].total_time).to.be.a('Number');
+          expect(data[i].description).to.be.a('string');
+          expect(data[i].is_public).to.be.a('Number');
+          expect(data[i].by).to.be.a('Number');
+        }
+      }
+    }
+    expect(res.getStatus()).to.equal(200);
+  });
+  
+}

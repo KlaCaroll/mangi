@@ -1,0 +1,6 @@
+auth_token: session_token
+auth_token_storage: localStorage
+prettier_path: ""
+hooks: "true"
+use_date_object: false
+packages: []

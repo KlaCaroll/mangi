@@ -1,0 +1,131 @@
+meta {
+  name: shopping list delete items
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{url}}/shopping-list/delete-items
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: {{token}}
+}
+
+body:json {
+  {
+    "name": "delete items",
+    "from": "2023-01-01T19:00:00Z",
+    "to": "2024-11-03T09:00:00Z",
+    "items": [
+      {
+        "name": "beurre"
+      },
+      {
+        "name": "crème fraiche"
+      },
+      {
+        "name": "épices italiennes"
+      },
+      {
+        "name": "fromage rapé à l italienne"
+      },
+      {
+        "name": "fromage frais aux herbes"
+      },
+      {
+        "name": "viande haché de boeuf"
+      },
+      {
+        "name": "carotte"
+      },
+      {
+        "name": "cube de bouillon de légumes"
+      },
+      {
+        "name": "concentré de tomates"
+      },
+      {
+        "name": "gousse d ail"
+      },
+      {
+        "name": "oignon"
+      },
+      {
+        "name": "vinaigre balsamique noir"
+      },
+      {
+        "name": "lardons fumés"
+      },
+      {
+        "name": "courgette"
+      },
+      {
+        "name": "citron"
+      },
+      {
+        "name": "farfalle"
+      },
+      {
+        "name": "huile d olive"
+      }
+    ]
+  }
+  
+}
+
+tests {
+  test("should be able to delete item to shoppingList", function() {
+    const data = res.getBody();
+    if (data.code == "database_error:") {
+      expect(data.code).to.be.a('string');
+      expect(data.code).to.equal("database_error:");
+      expect(data.err).to.equal("internal problem with database");
+    } else if (data.code == "unauthorized_error:") {
+      expect(data.code).to.be.a('string');
+      expect(data.code).to.equal("unauthorized_error:");
+      expect(data.err).to.equal("token expired");
+    } else {
+      expect(data).to.be.a('object');
+      expect(data.name).to.be.a('string');
+      expect(data.user_id).to.be.a('Number');
+      expect(data.from).to.be.a('string');
+      expect(data.to).to.be.a('string');
+      expect(data.items).to.be.an('null'||'array');
+      const items = data.items
+      for (let i = 0; i < items.length; i += 1) {
+        const item = items[i]
+        expect(item.name).to.be.a('string');
+        expect(item.quantity).to.be.a('Number');
+        expect(item.unit).to.be.a('string');
+      }
+    }
+    expect(res.getStatus()).to.equal(200);
+  });
+  
+  test("item shouldn't be in the shoppinglist", function() {
+    const data = res.getBody();
+    if (data.code == "database_error:") {
+      expect(data.code).to.be.a('string');
+      expect(data.code).to.equal("database_error:");
+      expect(data.err).to.equal("internal problem with database");
+    } else if (data.code == "unauthorized_error:") {
+      expect(data.code).to.be.a('string');
+      expect(data.code).to.equal("unauthorized_error:");
+      expect(data.err).to.equal("token expired");
+    } else {
+      const input = req.getBody();
+      expect(input.items).to.be.an('null'||'array');
+      const inputItems = input.items;
+      const items = data.items
+      for (let i = 0; i < items.length; i+=1) {
+        const item = items[i]
+        if (item.name == inputItems[0].name) {
+          expect(inputItems[0].name).not.to.be.a('string');
+        }   
+      }
+    }
+  });
+}

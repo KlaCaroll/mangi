@@ -1,0 +1,19 @@
+meta {
+  name: home's shopping lists
+  type: http
+  seq: 7
+}
+
+get {
+  url: {{url}}/home/shopping-lists?home_id=5
+  body: none
+  auth: none
+}
+
+query {
+  home_id: 5
+}
+
+headers {
+  Authorization: {{token}}
+}

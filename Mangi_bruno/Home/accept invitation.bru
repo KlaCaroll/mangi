@@ -1,0 +1,44 @@
+meta {
+  name: accept invitation
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{url}}/home/invitation
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: {{token}}
+}
+
+body:json {
+  {
+    "home_id": 1
+  }
+}
+
+tests {
+  test("should be able to accept an invitation to a house", function() {
+    const data = res.getBody();
+    if (data.code == "input_error:") {
+      expect(data.code).to.be.a('string');
+      expect(data.err).to.be.a('string');
+    } else if (data.code == "database_error:") {
+      expect(data.code).to.equal("database_error:");
+      expect(data.err).to.equal("internal problem with database");
+    } else if (data.err == "token expired") {
+      expect(data.code).to.equal("unauthorized_error:");
+      expect(data.err).to.equal("token expired");
+    } else {
+      expect(data).to.be.a('Object');
+      expect(data.id).to.be.a('Number');
+      expect(data.name).to.be.a('string');
+      expect(data.owner_id).to.be.a('Number');
+      expect(data.owner_name).to.be.a('string');
+    }
+    expect(res.getStatus()).to.equal(200);
+  });
+}

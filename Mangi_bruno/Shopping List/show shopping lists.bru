@@ -1,0 +1,15 @@
+meta {
+  name: show shopping lists
+  type: http
+  seq: 7
+}
+
+get {
+  url: {{url}}/shopping-lists
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: {{token}}
+}

@@ -1,0 +1,61 @@
+meta {
+  name: update preference
+  type: http
+  seq: 9
+}
+
+put {
+  url: {{url}}/user/preference
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: {{token}}
+}
+
+body:json {
+  {
+    "user_id": 13,
+    "vegetarian_exist": false, 
+    "Vegan_exist": false,
+    "Pork_exist": false,
+    "Piment_exist": false,
+    "Beef_exist": false,
+    "Lactose_exist": false,
+    "Peanuts_exist": false,
+    "Gluten_exist": false,
+    "Crustacean_exist": false,
+    "Egg_exist": false,
+    "Nuts_exist": false,
+    "Fructose_exist": false,
+    "Seafood_exist": false,
+    "Celery_exist": false,
+    "Fish_exist": false,
+    "Mustard_exist": false,
+    "Sesame_exist": false,
+    "Soy_exist": false,
+    "Sulphites_exist": false,
+    "Lupine_exist": false
+  }
+}
+
+tests {
+  test("should be able to update preferences", function() {
+    const data = res.getBody();
+    if (data.err == "token expired") {
+      expect(data.code).to.be.a('string');
+      expect(data.code).to.equal("unauthorized_error:");
+      expect(data.err).to.be.a('string');
+      expect(data.err).to.equal("token expired");
+    } else if (data.err == "not your profil") {
+      expect(data.code).to.be.a('string');
+      expect(data.code).to.equal("unauthorized_error:");
+      expect(data.err).to.be.a('string');
+      expect(data.err).to.equal("not your profil");
+    } else {
+      expect(data.ack).to.equal(true);
+    }
+    expect(res.getStatus()).to.equal(200);
+  });
+}

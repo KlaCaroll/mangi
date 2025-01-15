@@ -1,0 +1,45 @@
+meta {
+  name: delete recipe
+  type: http
+  seq: 2
+}
+
+delete {
+  url: {{url}}/recipe?id=15
+  body: json
+  auth: none
+}
+
+query {
+  id: 15
+}
+
+headers {
+  Authorization: {{token}}
+}
+
+tests {
+  test("should be able to delete a recipe", function() {
+    const data = res.getBody();
+    if (data.code == "database_error:") {
+      expect(data.code).to.be.a('string');
+      expect(data.code).to.equal("database_error:");
+      expect(data.err).to.equal("internal problem with database");
+    } else if (data.code == "input_error:") {
+      expect(data.code).to.be.a('string');
+      expect(data.code).to.equal("input_error:");
+    } else if (data.err == "token expired") {
+      expect(data.code).to.be.a('string');
+      expect(data.code).to.equal("unauthorized_error:");
+      expect(data.err).to.equal("token expired");
+    } else if (data.err == "not your recipe") {
+      expect(data.code).to.be.a('string');
+      expect(data.code).to.equal("unauthorized_error");
+      expect(data.err).to.be.a('string');
+      expect(data.err).to.equal("not your recipe");
+    } else {
+      expect(data.ack).to.equal(true);
+    }
+    expect(res.getStatus()).to.equal(200);
+  });
+}

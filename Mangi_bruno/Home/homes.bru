@@ -1,0 +1,49 @@
+meta {
+  name: homes
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{url}}/homes
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: {{token}}
+}
+
+tests {
+  test("should be to see all houses", function() {
+    const data = res.getBody();
+    if (data.code == "input_error:") {
+      expect(data.code).to.be.a('string');
+      expect(data.err).to.be.a('string');
+    } else if (data.code == "database_error:") {
+      expect(data.code).to.equal("database_error:");
+      expect(data.err).to.equal("internal problem with database");
+    } else if (data.err == "token expired") {
+      expect(data.code).to.equal("unauthorized_error:");
+      expect(data.err).to.equal("token expired");
+    } else {
+      if (data.length > 0) {
+        expect(data).to.be.an('array');
+        for (let i = 0; i < data.length; i += 1) {
+          const home = data[i]
+          expect(home.id).to.be.a('Number');
+          expect(home.name).to.be.a('string');
+          expect(home.owner_id).to.be.a('Number');
+          expect(home.owner_name).to.be.a('string');
+          expect(home.members).to.be.an('array');
+          const members = home.members;
+          for (let j = 0; i < members.lenght; i += 1) {
+            expect(members).to.be.a('object');
+            expect(members.id).to.be.a('Number');
+            expect(members.name).to.be.a('string');
+          }
+        }
+      }
+    }
+  });
+}

@@ -1,0 +1,40 @@
+meta {
+  name: fetch ustensils
+  type: http
+  seq: 10
+}
+
+get {
+  url: {{url}}/ustensils/list
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: {{token}}
+}
+
+tests {
+  test("should be able to show ustensils", function() {
+    const data = res.getBody();
+    if (data.code == "database_error:") {
+      expect(data.code).to.be.a('string');
+      expect(data.code).to.equal("database_error:");
+      expect(data.err).to.equal("internal problem with database");
+    } else if (data.err == "token expired") {
+      expect(data.code).to.be.a('string');
+      expect(data.code).to.equal("unauthorized_error:");
+      expect(data.err).to.equal("token expired");
+    } else {
+      if (data.length > 0) {
+        for (let i = 0; i < data.length; i += 1) {
+          expect(data[i]).to.be.a('object');
+          expect(data[i].id).to.be.a('Number');
+          expect(data[i].name).to.be.a('string');
+        }
+        expect(data).to.be.an('array');
+      }
+    }
+    expect(res.getStatus()).to.equal(200);
+  });
+}

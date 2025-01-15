@@ -1,0 +1,36 @@
+meta {
+  name: fetch recipes name
+  type: http
+  seq: 9
+}
+
+get {
+  url: {{url}}/recipes/list
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: {{token}}
+}
+
+tests {
+  test("should be able to show recipes", function() {
+    const data = res.getBody();
+    if (data.code == "database_error:") {
+      expect(data.code).to.equal("database_error:");
+      expect(data.err).to.equal("internal problem with database");
+    } else if (data.err == "token expired") {
+      expect(data.code).to.equal("unauthorized_error:");
+      expect(data.err).to.equal("token expired");
+    } else {
+      expect(data).to.be.an('array');
+      for (let i = 0; i < data.length; i += 1) {
+        expect(data[i]).to.be.a('object');
+        expect(data[i].id).to.be.a('Number');
+        expect(data[i].name).to.be.a('string');
+      }
+    }
+    expect(res.getStatus()).to.equal(200);
+  });
+}

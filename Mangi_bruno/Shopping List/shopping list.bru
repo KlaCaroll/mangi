@@ -1,0 +1,67 @@
+meta {
+  name: shopping list
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{url}}/compute-shopping-list
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: {{token}}
+}
+
+body:json {
+  {
+    "user_id": 2,
+    "from": "2023-01-01T19:00:00Z",
+    "to": "2024-11-03T09:00:00Z",
+    "name": "to delete",
+    "home_id": 1
+  }
+  
+  
+  
+  
+}
+
+tests {
+  test("should be able to create shoppingList", function() {
+    const data = res.getBody();
+    if (data.code == "database_error:") {
+      expect(data.code).to.be.a('string');
+      expect(data.code).to.equal("database_error:");
+      expect(data.err).to.equal("internal problem with database");
+    } else if (data.code == "input_error:") {
+      expect(data.code).to.be.a('string');
+      expect(data.code).to.equal("input_error:");
+      expect(data.err).to.equal("this list's name already exists");
+    } else if (data.err == "can't ask for the shopping list from another user") {
+      expect(data.code).to.be.a('string');
+      expect(data.code).to.equal("unauthorized_error:");
+      expect(data.err).to.equal("can't ask for the shopping list from another user");
+    } else if (data.err == "token expired") {
+      expect(data.code).to.be.a('string');
+      expect(data.code).to.equal("unauthorized_error:");
+      expect(data.err).to.equal("token expired");
+    } else {
+      expect(data).to.be.a('object');
+      expect(data.name).to.be.a('string');
+      expect(data.user_id).to.be.a('Number');
+      expect(data.from).to.be.a('string');
+      expect(data.to).to.be.a('string');
+      expect(data.items).to.be.an('array');
+      const items = data.items
+      for (let i = 0; i < items.length; i += 1) {
+        const item = items[i]
+        expect(item.name).to.be.a('string');
+        expect(item.quantity).to.be.a('Number');
+        expect(item.unit).to.be.a('string');
+      }
+    }
+    expect(res.getStatus()).to.equal(200);
+  });
+}

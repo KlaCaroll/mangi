@@ -1,0 +1,31 @@
+{
+  "expo": {
+    "name": "mangi_app",
+    "slug": "mangi_app",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./Assets/Icon/logo_mangi.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./Assets/Icon/logo_mangi.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    }
+  },
+
+  "ios": {
+    "supportsTablet": true
+  },
+  "android": {
+    "adaptiveIcon": {
+      "foregroundImage": "./Assets/Icon/adaptive-icon.png",
+      "backgroundColor": "#ffffff",
+      "usesCleartextTraffic": true
+    }
+  },
+  "permissions": ["INTERNET"],
+  "web": {
+    "favicon": "./Assets/Icon/favicon.png"
+  },
+  "plugins": ["expo-font"]
+}

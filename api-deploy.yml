@@ -1,0 +1,22 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: api-Dockerfile
+      args:
+        port: ${PORT}
+        go_files_directory: ${GO}
+        src_directory: ${SRC}
+    container_name: mangi_api
+    restart: always
+    ports:
+      - ${PORT}:${PORT}
+    command: ["api", "--dsn", "${DB_USER}:${DB_PASSWORD}@tcp(${DB_HOST}:${DB_PORT})/${DB_NAME}?parseTime=true", "--secretKey", "${SECRET}", "--addr", "0.0.0.0:${PORT}"]
+    networks:
+      mangi_network:
+        ipv4_address: ${HOST}
+
+networks:
+  mangi_network:
+    external: true
+

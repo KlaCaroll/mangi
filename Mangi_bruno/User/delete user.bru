@@ -1,0 +1,51 @@
+meta {
+  name: delete user
+  type: http
+  seq: 3
+}
+
+delete {
+  url: {{url}}/user?id=15
+  body: json
+  auth: none
+}
+
+query {
+  id: 15
+}
+
+headers {
+  Authorization: {{token}}
+}
+
+body:json {
+  {
+    "id": 15
+  }
+}
+
+tests {
+  test("should be able to delete a user", function() {
+    const data = res.getBody();
+    if (data.err == "token expired") {
+      expect(data.code).to.be.a('string');
+      expect(data.code).to.equal("unauthorized_error:");
+      expect(data.err).to.be.a('string');
+      expect(data.err).to.equal("token expired");
+    } else if (data.err == "not your profil") {
+      expect(data.code).to.be.a('string');
+      expect(data.code).to.equal("unauthorized_error:");
+      expect(data.err).to.be.a('string');
+      expect(data.err).to.equal("not your profil");
+    } else if (data.err == "can't delete this user") {
+      expect(data.code).to.be.a('string');
+      expect(data.code).to.equal("unauthorized_error:");
+      expect(data.err).to.be.a('string');
+      expect(data.err).to.equal("can't delete this user");
+    } else {
+      expect(data.ack).to.be.a('string');
+      expect(data.ack).to.equal(true); 
+    }
+    expect(res.getStatus()).to.equal(200);
+  });
+}

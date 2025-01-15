@@ -1,0 +1,16 @@
+FROM golang:1.23
+
+WORKDIR /usr/src/api
+
+ARG port
+ARG go_files_directory
+ARG src_directory
+
+# pre-copy/cache go.mod for pre-downloading dependencies and only redownloading them in subseque>
+COPY ${go_files_directory}go.mod ${go_files_directory}go.sum ./
+RUN go mod download && go mod verify
+
+COPY $src_directory .
+RUN go build -v -o /usr/local/bin/api ./...
+EXPOSE $port
+CMD ["api"]

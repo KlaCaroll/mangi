@@ -1,0 +1,52 @@
+meta {
+  name: show home
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{url}}/home
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: {{token}}
+}
+
+body:json {
+  {
+    "home_name": "maison"
+  }
+}
+
+tests {
+  test("should be to see a house", function() {
+    const data = res.getBody();
+    if (data.code == "input_error:") {
+      expect(data.code).to.be.a('string');
+      expect(data.err).to.be.a('string');
+    } else if (data.code == "database_error:") {
+      expect(data.code).to.equal("database_error:");
+      expect(data.err).to.equal("internal problem with database");
+    } else if (data.err == "token expired") {
+      expect(data.code).to.equal("unauthorized_error:");
+      expect(data.err).to.equal("token expired");
+    } else {
+      expect(data).to.be.a('Object');
+      expect(data.id).to.be.a('Number');
+      expect(data.name).to.be.a('string');
+      expect(data.owner_id).to.be.a('Number');
+      expect(data.owner_name).to.be.a('string');
+      const members = data.members
+      if (members.length > 0) {
+        expect(members).to.be.an('array');
+        for (let i = 0; i < members.length; i += 1) {
+          expect(members[i].id).to.be.a('Number');
+          expect(members[i].name).to.be.a('string');
+        }
+      }
+    }
+    expect(res.getStatus()).to.equal(200);
+  });
+}

@@ -1,0 +1,39 @@
+meta {
+  name: create meal
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{url}}/meal
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: {{token}}
+}
+
+body:json {
+  {
+    "planned_at": "2024-10-31T19:00:05Z",
+    "guests": 2,
+    "recipe_id": 3
+  }
+}
+
+tests {
+  test("should be able to create a meal", function() {
+    const data = res.getBody();
+    if (data.code == "database_error:") {
+      expect(data.code).to.equal("database_error:");
+      expect(data.err).to.equal("internal problem with database");
+    } else if (data.err == "token expired") {
+      expect(data.code).to.equal("unauthorized_error:");
+      expect(data.err).to.equal("token expired");
+    } else {
+      expect(data.id).to.be.a('Number');
+    }
+    expect(res.getStatus()).to.equal(200);
+  });
+}

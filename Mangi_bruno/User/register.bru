@@ -1,0 +1,35 @@
+meta {
+  name: register
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{url}}/register
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "hellowrold",
+    "password": "1234",
+    "email": "helloworld@gmail.com"
+  }
+}
+
+tests {
+  test("register cases", function() {
+    const data = res.getBody();
+    if (data.code == "email_already_exists_error") {
+      expect(data.code).to.equal("email_already_exists_error");
+      expect(data.err).to.equal("an user with this email already exists"); 
+    } else if (data.code == "mail_error:") {
+      expect(data.code).to.equal("mail_error:");
+      expect(data.err).to.equal("internal probleme to send mail"); 
+    } else {
+      expect(data.ack).to.equal(true);
+    }
+      expect(res.getStatus()).to.equal(200);
+  });
+}

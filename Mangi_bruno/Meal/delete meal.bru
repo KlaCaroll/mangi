@@ -1,0 +1,46 @@
+meta {
+  name: delete meal
+  type: http
+  seq: 3
+}
+
+delete {
+  url: {{url}}/meal?id=1
+  body: json
+  auth: none
+}
+
+query {
+  id: 1
+}
+
+headers {
+  Authorization: {{token}}
+}
+
+body:json {
+  {
+    "id": ""
+  }
+}
+
+tests {
+  test("delete cases", function() {
+    const data = res.getBody();
+    // if no meal in data set
+    if (data.err == "token expired") {
+      expect(data.code).to.equal("unauthorized_error:");
+      expect(data.err).to.equal("token expired");
+    } else if (data.err == "now the meal owner") {
+      expect(data.code).to.equal("unauthorized_error:");
+      expect(data.err).to.equal("now the meal owner");
+    } else if (data.code == "database_error:") {
+      expect(data.code).to.equal("database_error:");
+      expect(data.err).to.equal("internal problem with database");
+      expect(res.getStatus()).to.equal(200); 
+    } else {
+      expect(data.ack).to.equal(true);
+      expect(res.getStatus()).to.equal(200);
+    }
+  });
+}

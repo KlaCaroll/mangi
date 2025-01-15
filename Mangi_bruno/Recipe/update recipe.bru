@@ -1,0 +1,54 @@
+meta {
+  name: update recipe
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{url}}/recipe
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: {{token}}
+}
+
+body:json {
+  {
+    "id": 21,
+    "name": "recette pour test - 2",
+    "preparation_time": 5, 
+    "total_time": 45, 
+    "description": "à écrire",
+    "is_public": 0
+  }
+}
+
+tests {
+  test("should be able to update a recipe", function() {
+    const data = res.getBody();
+    if (data.code == "database_error:") {
+      expect(data.code).to.be.a('string');
+      expect(data.code).to.equal("database_error:");
+      expect(data.err).to.equal("internal problem with database");
+    } else if (data.code == "unauthorized_error") {
+      expect(data.code).to.be.a('string');
+      expect(data.code).to.equal("unauthorized_error");
+      expect(data.err).to.equal("token expired");
+    } else if (data.err == "token expired") {
+      expect(data.code).to.be.a('string');
+      expect(data.code).to.equal("unauthorized_error:");
+      expect(data.err).to.equal("token expired");
+    } else if (data.err == "cant_update_this_recipe") {
+      expect(data.code).to.be.a('string');
+      expect(data.code).to.equal("Unauthoried_request_error");
+      expect(data.err).to.be.a('string');
+      expect(data.err).to.equal("cant_update_this_recipe");
+    } else { 
+      expect(data.ack).to.equal(true);
+    }
+    expect(res.getStatus()).to.equal(200);
+  });
+  
+}

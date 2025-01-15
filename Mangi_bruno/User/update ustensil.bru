@@ -1,0 +1,47 @@
+meta {
+  name: update ustensil
+  type: http
+  seq: 8
+}
+
+put {
+  url: {{url}}/user/ustensil
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: {{token}}
+}
+
+body:json {
+  {
+    "user_id": 1,
+    "microwave_exist": true,
+    "oven_exist": true,
+    "pressure_cooker_exist": true,
+    "wok_exist": true,
+    "fryer_exist": true,
+    "mix_exist": false
+  }
+}
+
+tests {
+  test("should be able to update ustensils", function() {
+    const data = res.getBody();
+    if (data.err == "token expired") {
+      expect(data.code).to.be.a('string');
+      expect(data.code).to.equal("unauthorized_error:");
+      expect(data.err).to.be.a('string');
+      expect(data.err).to.equal("token expired");
+    } else if (data.err == "not your profil") {
+      expect(data.code).to.be.a('string');
+      expect(data.code).to.equal("unauthorized_error:");
+      expect(data.err).to.be.a('string');
+      expect(data.err).to.equal("not your profil");
+    } else {
+      expect(data.ack).to.equal(true);
+    }
+    expect(res.getStatus()).to.equal(200);
+  });
+}

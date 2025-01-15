@@ -1,0 +1,50 @@
+meta {
+  name: show meal
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{url}}/meal?id=5
+  body: json
+  auth: none
+}
+
+query {
+  id: 5
+}
+
+headers {
+  Authorization: {{token}}
+}
+
+body:json {
+  {
+    "id": 9
+  }
+}
+
+tests {
+  test("should be abble to show meal", function() {
+    const data = res.getBody();
+    // if no meal in data set
+    if (data.err == "not_your_meal") {
+      expect(data.code).to.equal("unauthorized_error:");
+      expect(data.err).to.equal("not_your_meal");
+    } else if (data.err == "token expired") {
+      expect(data.code).to.equal("unauthorized_error:");
+      expect(data.err).to.equal("token expired");
+    } else if (data.code == "database_error:") {
+      expect(data.code).to.equal("database_error:");
+      expect(data.err).to.equal("internal problem with database");
+    } else {
+      expect(data).to.be.a('object');
+      expect(data.meal_id).to.be.a('Number');
+      expect(data.planned_at).to.be.a('string');
+      expect(data.guests).to.be.a('Number');
+      expect(data.recipe).to.be.a('string');
+      expect(data.OwnerID).to.be.a('Number');
+    }
+    expect(res.getStatus()).to.equal(200); 
+  });
+}

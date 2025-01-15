@@ -1,0 +1,33 @@
+meta {
+  name: rgpd data
+  type: http
+  seq: 10
+}
+
+get {
+  url: {{url}}/user/rgpd-data
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: {{token}}
+}
+
+tests {
+  test("should be able to ask datas rgpd", function() {
+    const data = res.getBody();
+    if (data.code == "unauthorized_error:") {
+      expect(data.code).to.be.a('string');
+      expect(data.code).to.equal("unauthorized_error:");
+      expect(data.err).to.be.a('string');
+      expect(data.err).to.equal("token expired");
+    } else if (data.code == "mail_error:") {
+      expect(data.code).to.equal("mail_error:");
+      expect(data.err).to.equal("internal probleme to send mail");
+    } else {
+      expect(data.ack).to.equal(true);
+    }
+    expect(res.getStatus()).to.equal(200);
+  });
+}
