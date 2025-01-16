@@ -10,10 +10,10 @@ As such, having a practical and efficient tool to simplify these tasks is becomi
 
 ## **Contents**
 
-- [Prerequisites](https://rendu-git.etna-alternance.net/module-9681/activity-52182/group-1038068#prerequisites)
-- [Installation guide](https://rendu-git.etna-alternance.net/module-9681/activity-52182/group-1038068#installation-guide)
-- [User manual](https://rendu-git.etna-alternance.net/module-9681/activity-52182/group-1038068#user-manual)
-- [Crew](https://rendu-git.etna-alternance.net/module-9681/activity-52182/group-1038068#crew)
+- [Prerequisites](https://github.com/KlaCaroll/mangi?tab=readme-ov-file#prerequisites)
+- [Installation guide](https://github.com/KlaCaroll/mangi?tab=readme-ov-file#installation-guide)
+- [User manual](https://github.com/KlaCaroll/mangi?tab=readme-ov-file#user-manual)
+- [Crew](https://github.com/KlaCaroll/mangi?tab=readme-ov-file#crew)
 
 ## **Prerequisites**
 
@@ -21,7 +21,7 @@ As such, having a practical and efficient tool to simplify these tasks is becomi
 - Golang
 - mysql
 - mailpit
-- bruno [see the bruno folder](https://rendu-git.etna-alternance.net/module-9681/activity-52182/group-1038068/-/tree/KAN-82_updating-readme/Mangi_bruno)
+- bruno [see the bruno folder](https://github.com/KlaCaroll/mangi/tree/main/Mangi_bruno)
 ### frontend
 - react / TS
 - Expo
