@@ -105,7 +105,7 @@ check on portainer.mangi.local to check if your build on staging is completed
 
 ## **User manual**
 
-documentation on [MET3](https://rendu-git.etna-alternance.net/module-9680/activity-52183/group-1038670)
+documentation on [MET3](https://github.com/KlaCaroll/mangi-metodo)
 
 ## **R&D usefull informations**
 
